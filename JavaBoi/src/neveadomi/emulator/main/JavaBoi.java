@@ -1,12 +1,8 @@
 package neveadomi.emulator.main;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Scanner;
-
 import neveadomi.emulator.cpu.Register;
 import neveadomi.emulator.cpu.Register16Bit;
-import neveadomi.emulator.memory.Cartridge;
 
 public class JavaBoi {
 
@@ -24,12 +20,20 @@ public class JavaBoi {
 //			System.out.println("ROM BANKS: "+cart.romBanks);
 //			in.close();
 			
-			Register test = new Register16Bit();
+			Register16Bit test = new Register16Bit();
 			test.setBit(1, 1);
+			test.setBit(9, 1);
 			System.out.println(test.value());
-			Register test2 = new Register16Bit(16);
+			System.out.println(test.getMS8Bit().value());
+			System.out.println(test.getLS8Bit().value());
+			test.getLS8Bit().setValue(0xFF);
+			System.out.println(test.getMS8Bit().value());
+			System.out.println(test.getLS8Bit().value());
+			System.out.println(test.value());
+			Register test2 = new Register16Bit(0xFFFF);
 			System.out.println(test2.value());
-			System.out.println(Integer.toBinaryString(16));
+			System.out.println(Integer.toBinaryString(0xFFFF));
+			
         }
 
 }

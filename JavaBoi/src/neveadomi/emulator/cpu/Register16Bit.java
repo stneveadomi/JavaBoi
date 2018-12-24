@@ -7,14 +7,13 @@ package neveadomi.emulator.cpu;
 public class Register16Bit implements Register {
 	
 	
-	private int[] rep = new int[16];
+	private Register8Bit repMS;
+	private Register8Bit repLS;
 	
 	private void createNewRep()
 	{
-		for(int x = 0; x < rep.length; x++)
-		{
-			rep[x] = 0;
-		}
+		repMS = new Register8Bit();
+		repLS = new Register8Bit();
 	}
 	
 	/**
@@ -41,6 +40,46 @@ public class Register16Bit implements Register {
 		}
 	}
 	
+	public Register8Bit getMS8Bit() {
+		return repMS;
+	}
+	
+	public Register8Bit getLS8Bit() {
+		return repLS;
+	}
+	
+	/**
+	 * Sets the 8 most significant bits of the register.
+	 * @requires value in an unsigned binary representation is less than 8 bits.
+	 */
+	public void setMS8Bits(int value)
+	{
+		String bin = new StringBuilder(Integer.toBinaryString(value)).reverse().toString();
+		for(int bit = 8; bit<16;bit++)
+		{
+			if(bit<bin.length()+8)
+				setBit(bit, Integer.parseInt(""+bin.charAt(bit)));
+			else
+				setBit(bit, 0);
+		}
+	}
+	
+	/**
+	 * Sets the 8 least significant bits of the register.
+	 * @requires value in an unsigned binary representation is less than 8 bits.
+	 */
+	public void setLS8Bits(int value)
+	{
+		String bin = new StringBuilder(Integer.toBinaryString(value)).reverse().toString();
+		for(int bit = 0; bit<8;bit++)
+		{
+			if(bit<bin.length()+8)
+				setBit(bit, Integer.parseInt(""+bin.charAt(bit)));
+			else
+				setBit(bit, 0);
+		}
+	}
+	
 	
 
 	/* (non-Javadoc)
@@ -48,7 +87,12 @@ public class Register16Bit implements Register {
 	 */
 	@Override
 	public void setBit(int bit, int value) {
-		this.rep[bit] = value;
+		if(bit>7)
+		{
+			repMS.setBit(bit-8, value);
+			return;
+		}
+		repLS.setBit(bit, value);
 
 	}
 
@@ -57,7 +101,9 @@ public class Register16Bit implements Register {
 	 */
 	@Override
 	public int getBit(int bit) {
-		return this.rep[bit];
+		if(bit>7)
+			return repMS.getBit(bit-8);
+		return repLS.getBit(bit);
 	}
 
 	/* (non-Javadoc)

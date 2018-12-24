@@ -175,5 +175,10 @@ public class Cartridge implements AddressSpace {
 	public boolean accepts(int address) {
 		return (address>0)&&(address<rom.length);
 	}
+	
+	public int size()
+	{
+		return rom.length;
+	}
 
 }

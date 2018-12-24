@@ -12,5 +12,7 @@ public interface AddressSpace {
 	public int writeByte(int address, int value);
 	
 	public boolean accepts(int address);
+	
+	public int size();
 
 }
