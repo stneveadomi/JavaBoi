@@ -1,10 +1,15 @@
-package neveadomi.emulator.cpu;
+package neveadomi.emulator.cpu.opcode;
 
-public class OPCode {
+import java.util.LinkedList;
+import java.util.List;
+
+public class OPCode implements OperationCode{
 	
 	private int opCode;
 	
 	private String label;
+	
+	private List<String> args;
 	
 	private int opBytes;
 	
@@ -18,10 +23,11 @@ public class OPCode {
 	public OPCode(int opCode)
 	{
 		this.opCode = opCode;
-		generateOpCode();
+		this.args = new LinkedList<String>();
+		generateOpMembers();
 	}
 	
-	public int getOPCode()
+	public int getAddress()
 	{
 		return this.opCode;
 	}
@@ -36,13 +42,13 @@ public class OPCode {
 		return this.opBytes;
 	}
 
-	private void generateOpCode() 
+	private void generateOpMembers() 
 	{
 		this.opBytes = 1;
 		switch(opCode)
 		{
 			case 0x00: this.label = "NOP"; break;
-			case 0x01: opBytes = 3; this.label = "LD BC, d16";break;
+			case 0x01: opBytes = 3; this.label = "LD BC, d16"; break;
 			case 0x02: this.label = "LD (BC), A"; break;
 			case 0x03: this.label = "INC BC"; break;
 			case 0x04: this.label = "INC B"; break;
@@ -57,7 +63,7 @@ public class OPCode {
 			case 0x0D: this.label = "DEC C"; break;
 			case 0x0E: opBytes = 2; this.label = "LD C, d8"; break;
 			case 0x0F: this.label = "RRCA"; break;
-			case 0x10: this.label = "STOP (Expected NOP to follow)"; break;
+			case 0x10: this.label = "STOP"; break;
 			case 0x11: opBytes = 3; this.label = "LD DE, d16"; break;
 			case 0x12: this.label = "LD (DE), A"; break;
 			case 0x13: this.label = "INC DE"; break;
@@ -244,7 +250,7 @@ public class OPCode {
 			case 0xC8: this.label = "RET Z"; break;
 			case 0xC9: this.label = "RET"; break;
 			case 0xCA: opBytes = 3; this.label = "JP Z, a16"; break;
-			case 0xCB: opBytes = 2; this.label = "PREFIX"; break;
+			case 0xCB: opBytes = 2; this.label = "EXT"; break;
 			case 0xCC: opBytes = 3; this.label = "CALL Z, a16"; break;
 			case 0xCD: opBytes = 3; this.label = "CALL a16"; break;
 			case 0xCE: opBytes = 2; this.label = "ADC A, d8"; break;
@@ -281,7 +287,7 @@ public class OPCode {
 			case 0xF6: opBytes = 2; this.label = "OR d8"; break;
 			case 0xF7: this.label = "RST 30H"; break;
 			case 0xF8: opBytes = 2; this.label = "LD HL, SP+r8"; break;
-			case 0xF9: this.label = "LD SP,HL"; break;
+			case 0xF9: this.label = "LD SP, HL"; break;
 			case 0xFA: opBytes = 3; this.label = "LD A, (a16)"; break;
 			case 0xFB: this.label = "EI"; break;
 			case 0xFE: opBytes = 2; this.label = "CP d8"; break;
@@ -302,7 +308,44 @@ public class OPCode {
 		else
 			this.type = OP_Type.NULL;
 		
+		generateArgs();
 		
+		
+	}
+	
+	/**
+	 * This method essentially disassembles the $this.label into arguments in order.
+	 * e.g. this.opCode == 0x31, args = [LD, SP, d16]. args.get(0) => "LD"
+	 */
+	private void generateArgs()
+	{
+		String separators = " ,";
+		
+		int position = 0;
+		while(position < this.label.length())
+		{
+			String token = "";
+			while(separators.contains(""+this.label.charAt(position)))
+				position++;
+			while(position < this.label.length() && !separators.contains(""+this.label.charAt(position)))
+			{
+				token += this.label.charAt(position);
+				position++;
+			}
+			args.add(token);
+		}
+		
+		
+	}
+
+	public List<String> getArgs() {
+		return this.args;
+	}
+
+	@Override
+	public int getOPCycles() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 	

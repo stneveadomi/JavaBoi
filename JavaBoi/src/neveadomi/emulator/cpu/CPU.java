@@ -1,6 +1,8 @@
 package neveadomi.emulator.cpu;
 
 import neveadomi.emulator.AddressSpace;
+import neveadomi.emulator.cpu.opcode.OPCode;
+import neveadomi.emulator.memory.Cartridge;
 
 public class CPU {
 	
@@ -18,7 +20,7 @@ public class CPU {
 	
 	private Register16Bit HL;
 	
-	public CPU()
+	public CPU(Cartridge cart)
 	{
 		AF = new Register16Bit(0x01);
 		BC = new Register16Bit(0x0013);
@@ -26,35 +28,25 @@ public class CPU {
 		HL = new Register16Bit(0x014D);
 		PC = new Register16Bit();
 		SP = new Register16Bit(0xFFFE);
-		CPU_ROM = new MemoryMap();
-		OPCode op = new OPCode(0x00);
+		CPU_ROM = cart;
 	}
 	
-	public void executeInstruction(OPCode opCode)
+	public void increasePC(OPCode opcode)
 	{
-		switch(opCode.type)
-		{
-		case ALU:
-			switch(opCode.getOPCode())
-			{
-			//TODO case 0x80: Instructions.ADD(AF.getMS8bits(), y, flags);
-			}
-			
-			
-			break;
-		case BIT:
-			break;
-		case CONTROL:
-			break;
-		case JUMP:
-			break;
-		case NULL:
-			break;
-		case STORE:
-			break;
-		default:
-			break;
-		}
+		PC = new Register16Bit(PC.value()+opcode.getOPBytes());
 	}
+	
+	public void executeInstruction()
+	{
+		while(CPU_ROM.accepts(PC.value()))
+		{
+			OPCode current = new OPCode(CPU_ROM.getByte(PC.value()));
+			increasePC(current);
+			System.out.println(current.getArgs());
+		}
+		
+	}
+	
+	
 
 }

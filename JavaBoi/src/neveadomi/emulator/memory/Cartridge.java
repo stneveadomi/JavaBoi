@@ -69,14 +69,14 @@ public class Cartridge implements AddressSpace {
 	private int[] rom;
 	
 	public String title;
+	//TODO TESTING, put back in later
+	//public final int romBanks;
 	
-	public final int romBanks;
-	
-	public final int ramBanks;
+	//public final int ramBanks;
 	
 	
 	
-	public Cartridge(String path) throws IOException
+	public Cartridge(String path, boolean testing) throws IOException
 	{
 		/*
 		 * Initialize the ROM to an int array.
@@ -91,26 +91,31 @@ public class Cartridge implements AddressSpace {
 			rom[pos++] = (operationCode & 0xFF);
 		}
 		
+		
 		/*
 		 * Extract cartridge information from ROM.
 		 */
-		title = getTitle();
-		
-		isGB = isGB();
-		
-		type = Type.getByAddress(rom[0x147]);
-		
-		romBanks = getROMSize();
-		
-		ramBanks = getRAMSize();
-		
-		if(rom[0x14A] == 0)
+		if(!testing)
 		{
-			destination = Destination.JP;
-		} else 
-		{
-			destination = Destination.NJP;
+			title = getTitle();
+			
+			isGB = isGB();
+			
+			type = Type.getByAddress(rom[0x147]);
+			
+			//romBanks = getROMSize();
+			
+			//ramBanks = getRAMSize();
+			
+			if(rom[0x14A] == 0)
+			{
+				destination = Destination.JP;
+			} else 
+			{
+				destination = Destination.NJP;
+			}
 		}
+		
 		
 	}
 
@@ -173,7 +178,7 @@ public class Cartridge implements AddressSpace {
 
 	@Override
 	public boolean accepts(int address) {
-		return (address>0)&&(address<rom.length);
+		return (address>=0)&&(address<rom.length);
 	}
 	
 	public int size()
